@@ -1,117 +1,44 @@
-# Meridian
+# Harbour 🌊
 
-**PropTech platform for real estate investors — deal sourcing, portfolio management, and operational tooling.**
+**Your all-in-one life OS.** Harbour collects the tools you run your life with into one installable, offline-first app. The first live module is **Swim Coaching** — a full replacement for the Swim Coaching Tracker spreadsheet.
 
-Meridian connects the fragmented parts of the UK property investment lifecycle into one platform. It integrates directly with estate agents, mortgage brokers, and auction houses to give investors and developers a single system for finding, financing, managing, and exiting deals.
+## Swim Coaching module
 
----
+| Section | What it does |
+|---|---|
+| **Dashboard** | This week / this month / all-time lessons, income, and your cut — plus a month-by-month earnings chart, upcoming lessons, unpaid lessons, and active blocks. |
+| **Calendar** | Weekly availability grid (07:00–21:00, half-hour slots). Tap a slot to mark it available, blocked, or booked with a swimmer's name. Copy last week's layout in one tap. |
+| **Bookings** | One row per lesson. Prices and your share fill in automatically from Settings. Payment states: paid, due, block (prepaid), free, cancelled. |
+| **Swimmers** | Contact cards with live lesson counts and totals paid. |
+| **Blocks** | 5 weeks + 1 free = 6 lessons for £100. Progress rings tick off automatically from the bookings log. Block money is counted once, on the start date. |
+| **Settings** | Edit prices and block terms; export/import a JSON backup; reset to the original spreadsheet data. |
 
-## Problem
+Data lives in `localStorage` on the device — no account, no server. The original spreadsheet's swimmers, bookings, blocks, and calendar are pre-loaded as seed data.
 
-Property investors currently juggle spreadsheets, email chains, WhatsApp groups, and disconnected tools to manage their operations. Deal sourcing is manual. Contractor coordination is chaotic. Portfolio tracking is fragmented. There is no unified platform that connects the entire investment workflow — from acquisition through to exit.
+## Running it
 
-Estate agents, mortgage brokers, and auction houses each operate in silos, creating friction and missed opportunities for investors who work across all three.
+It's a static app — no build step. Serve the `harbour/` folder over HTTP:
 
----
-
-## Solution
-
-Meridian is a platform that sits at the centre of the property investment workflow:
-
-### For Investors & Developers
-- **Deal Pipeline** — Aggregate listings from agents, auctions, and off-market sources into a single searchable pipeline with filters for yield, area, property type, and renovation potential
-- **Deal Analysis** — Automated comparable analysis, refurbishment cost estimation, rental yield calculations, and flip margin projections
-- **Portfolio Dashboard** — Track all properties, tenants, contractors, budgets, and timelines in one view
-- **Contractor Management** — Assign trades to projects, track progress, manage quotes, and log spend against budgets
-- **Financial Tracking** — Mortgage payments, rental income, refurbishment spend, and P&L per property and across the portfolio
-
-### For Agents & Brokers (Integration Partners)
-- **Agent Portal** — Estate agents can push listings to Meridian's investor network, reaching qualified buyers faster
-- **Broker Integration** — Mortgage brokers can receive pre-qualified leads with deal details already attached
-- **Auction Feed** — Auction houses can list lots directly, with automated notifications to investors matching their criteria
-
----
-
-## Architecture
-
-```
-┌─────────────────────────────────────────────────┐
-│                   Meridian App                   │
-│              (Next.js / TypeScript)              │
-├──────────┬──────────┬──────────┬────────────────┤
-│  Deal    │ Portfolio │Contractor│   Financial    │
-│ Pipeline │ Manager  │ Tracker  │   Dashboard    │
-├──────────┴──────────┴──────────┴────────────────┤
-│                  API Layer                       │
-│              (Next.js API Routes)                │
-├──────────┬──────────┬───────────────────────────┤
-│ Supabase │  Stripe  │  External Integrations    │
-│ (Postgres│(Payments)│  (Rightmove, Zoopla,      │
-│  + Auth) │          │   auction APIs, broker    │
-│          │          │   portals)                │
-└──────────┴──────────┴───────────────────────────┘
+```bash
+cd harbour
+python3 -m http.server 8080   # or: npx serve .
 ```
 
----
+Then open http://localhost:8080.
 
-## Planned Tech Stack
+### Installing as an app
 
-| Layer | Technology |
-|-------|------------|
-| **Frontend** | Next.js 14, React 18, TypeScript, Tailwind CSS |
-| **Backend** | Next.js API Routes, Python (data analysis & scraping) |
-| **Database** | Supabase (PostgreSQL + Row Level Security) |
-| **Payments** | Stripe (SaaS subscriptions for investor accounts) |
-| **Data Sources** | Rightmove, Zoopla, auction house APIs, Land Registry |
-| **Analytics** | Python (pandas, NumPy) for comparable analysis and yield modelling |
-| **Deployment** | Vercel |
+PWA install requires HTTPS (or localhost). Once deployed:
 
----
+- **iPhone** — open in Safari → Share → *Add to Home Screen*
+- **Android / desktop Chrome** — use the *Install app* prompt in the browser menu
 
-## Data Model (Draft)
+Installed, it launches full-screen with its own icon and works fully offline.
 
-```sql
--- Core entities
-properties        -- address, type, status, purchase_price, current_value
-deals             -- property_id, stage (sourced/analysed/offered/exchanged/completed)
-portfolios        -- user_id, name, properties[]
+### Deploying with GitHub Pages
 
--- Operations
-contractors       -- name, trade, rate, rating
-projects          -- property_id, budget, timeline, status
-project_tasks     -- project_id, contractor_id, description, cost, completed
+A workflow at `.github/workflows/deploy-harbour.yml` publishes `harbour/` to GitHub Pages on every push to `main`. Enable it once in the repo: **Settings → Pages → Source → GitHub Actions**. The app will be live at `https://<user>.github.io/<repo>/`.
 
--- Financial
-transactions      -- property_id, type (mortgage/rent/refurb/insurance), amount, date
-mortgages         -- property_id, lender, rate, term, monthly_payment
+## Tech
 
--- Integrations
-agent_listings    -- agent_id, property details, pushed_at
-auction_lots      -- auction_house_id, lot details, guide_price, auction_date
-broker_leads      -- broker_id, deal_id, status
-```
-
----
-
-## Market Opportunity
-
-The UK property investment market lacks a dedicated software platform. Current tools are either:
-- **Too generic** — project management tools (Notion, Monday) that don't understand property
-- **Too narrow** — rent collection apps that ignore acquisition and development
-- **Too manual** — spreadsheets that break at scale
-
-Meridian targets the gap: a purpose-built operating system for property investors who manage multiple deals, renovations, and tenants simultaneously.
-
----
-
-## Status
-
-Currently in design and early development. The data model and architecture are being refined based on first-hand experience managing property investments.
-
-Built by [Hayden King](https://github.com/ViberKing) — property investor and software developer.
-
----
-
-## License
-
-[MIT](LICENSE)
+Vanilla ES modules, hand-rolled CSS design system, zero dependencies, zero build. Service worker precaches the shell for offline use. The earnings chart is inline SVG with colours validated for contrast and colour-vision safety on the app's dark surface.

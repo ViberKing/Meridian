@@ -1,0 +1,21 @@
+{
+  "name": "Harbour — Life OS",
+  "short_name": "Harbour",
+  "description": "Your all-in-one life OS. Swim coaching, and more to come.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f6f3ec",
+  "theme_color": "#f6f3ec",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Swim dashboard", "url": "./index.html#/swim", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Weekly calendar", "url": "./index.html#/swim/calendar", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Add a booking", "url": "./index.html#/swim/bookings", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}
